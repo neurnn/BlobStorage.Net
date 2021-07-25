@@ -44,6 +44,21 @@ namespace BlobStorage.Net.Storages
         public virtual Task<Uri> MakeUriAsync(string FullName) => NO_URI_AVAILABLE;
 
         /// <summary>
+        /// Make Uri String asynchronously.
+        /// When the underlying storage doesn't support, this always returns null.
+        /// </summary>
+        /// <param name="FullName"></param>
+        /// <returns></returns>
+        public virtual async Task<string> MakeUriStringAsync(string FullName)
+        {
+            var Uri = await MakeUriAsync(FullName);
+            if (Uri is null)
+                return null;
+
+            return Uri.ToString();
+        }
+
+        /// <summary>
         /// Returns the list of available blobs.
         /// </summary>
         /// <param name="FullName"></param>

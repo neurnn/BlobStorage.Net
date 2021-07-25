@@ -21,6 +21,7 @@ namespace BlobStorage.Net.Storages
 
         private DirectoryInfo m_Directory;
         private Uri m_BaseUri;
+        private string m_BaseUriString;
 
         /// <summary>
         /// Physical Blob.
@@ -54,6 +55,14 @@ namespace BlobStorage.Net.Storages
         /// <param name="Directory"></param>
         public DiskStorage(string Identifier, DirectoryInfo Directory, Uri BaseUri)
             : this(Identifier, Directory) => m_BaseUri = BaseUri;
+
+        /// <summary>
+        /// Initialize a new Disk Storage using Directory Information.
+        /// </summary>
+        /// <param name="Identifier"></param>
+        /// <param name="Directory"></param>
+        public DiskStorage(string Identifier, DirectoryInfo Directory, string BaseUriString)
+            : this(Identifier, Directory) => m_BaseUriString = BaseUriString;
 
         /// <summary>
         /// Get Creation Time.
@@ -119,6 +128,29 @@ namespace BlobStorage.Net.Storages
             }
 
             return base.MakeUriAsync(FullName);
+        }
+
+        /// <summary>
+        /// Make Uri String asynchronously.
+        /// When the underlying storage doesn't support, this always returns null.
+        /// </summary>
+        /// <param name="FullName"></param>
+        /// <returns></returns>
+        public override Task<string> MakeUriStringAsync(string FullName)
+        {
+            if (m_BaseUriString != null)
+            {
+                var RealName = Path.Combine(m_Directory.FullName, FullName.TrimStart('/', '.'));
+                try
+                {
+                    if (File.Exists(RealName) || Directory.Exists(RealName))
+                        return Task.FromResult(string.Join('/', m_BaseUriString.TrimEnd('/'), FullName.TrimStart('/')));
+                }
+
+                catch { }
+            }
+
+            return base.MakeUriStringAsync(FullName);
         }
 
         /// <summary>

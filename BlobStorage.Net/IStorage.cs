@@ -37,6 +37,14 @@ namespace BlobStorage.Net
         Task<Uri> MakeUriAsync(string FullName);
 
         /// <summary>
+        /// Make Uri String asynchronously.
+        /// When the underlying storage doesn't support, this always returns null.
+        /// </summary>
+        /// <param name="FullName"></param>
+        /// <returns></returns>
+        Task<string> MakeUriStringAsync(string FullName);
+
+        /// <summary>
         /// Returns the list of available blobs.
         /// </summary>
         /// <param name="FullName"></param>

@@ -29,7 +29,7 @@ namespace BlobStorage.Net.Storages
         /// <param name="SizeMax"></param>
         public MemoryStorage(string Identifier, long SizeMax = long.MaxValue)
             : base(Identifier) => m_SizeLeft = SizeMax;
-
+        
         /// <summary>
         /// Query the blob by its full name.
         /// </summary>

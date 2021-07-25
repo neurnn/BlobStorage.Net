@@ -102,6 +102,13 @@ namespace BlobStorage.Net
         public virtual async Task<Uri> MakeUriAsync() => await Storage.MakeUriAsync(FullName);
 
         /// <summary>
+        /// Make Uri String asynchronously.
+        /// When the underlying storage doesn't support, this always returns null.
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<string> MakeUriStringAsync() => await Storage.MakeUriStringAsync(FullName);
+
+        /// <summary>
         /// Returns the list of available blobs.
         /// When this blob isn't a directory, returns empty enumerable.
         /// </summary>

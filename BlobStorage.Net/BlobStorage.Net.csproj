@@ -10,6 +10,7 @@
     <Product>BlobStorage.Net</Product>
     <AssemblyName>BlobStorage.Net</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

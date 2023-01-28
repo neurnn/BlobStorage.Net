@@ -25,8 +25,11 @@ namespace BlobStorage.Net
 
             if (Descriptor is null)
             {
-                var Instance = new StorageRegistry();
-                This.AddSingleton(Instance);
+                StorageRegistry Instance;
+
+                This.AddSingleton(Instance = new StorageRegistry())
+                    .AddSingleton(Services => new StorageProvider(Instance, Services));
+
                 return Instance;
             }
 
@@ -41,9 +44,9 @@ namespace BlobStorage.Net
         /// <returns></returns>
         public static IStorage GetStorage(this IServiceProvider This, string Identifier = "default")
         {
-            var Registry = This.GetService<StorageRegistry>();
+            var Registry = This.GetService<StorageProvider>();
             if (Registry != null)
-                return Registry.Get(Identifier ?? "default");
+                return Registry.GetStorage(Identifier ?? "default");
 
             return null;
         }
@@ -68,6 +71,21 @@ namespace BlobStorage.Net
         /// <param name="Factory"></param>
         /// <returns></returns>
         public static IServiceCollection AddStorageFactory(this IServiceCollection This, string Identifier, Func<IStorage> Factory)
+        {
+            This.GetStorageRegistry()
+                .With(Identifier ?? "default", Factory);
+
+            return This;
+        }
+
+        /// <summary>
+        /// Add Storage Factory.
+        /// </summary>
+        /// <param name="This"></param>
+        /// <param name="Identifier"></param>
+        /// <param name="Factory"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddStorageFactory(this IServiceCollection This, string Identifier, Func<IServiceProvider, IStorage> Factory)
         {
             This.GetStorageRegistry()
                 .With(Identifier ?? "default", Factory);

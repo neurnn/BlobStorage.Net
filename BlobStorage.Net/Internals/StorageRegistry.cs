@@ -8,13 +8,14 @@ namespace BlobStorage.Net.Internals
 {
     internal class StorageRegistry
     {
-        private Dictionary<string, Func<IStorage>> m_Factories;
-        private Dictionary<string, IStorage> m_Instances;
+        private Dictionary<string, Func<IServiceProvider, IStorage>> m_Factories;
 
+        /// <summary>
+        /// Initialize a new <see cref="StorageRegistry"/> instance.
+        /// </summary>
         public StorageRegistry()
         {
-            m_Factories = new Dictionary<string, Func<IStorage>>();
-            m_Instances = new Dictionary<string, IStorage>();
+            m_Factories = new Dictionary<string, Func<IServiceProvider, IStorage>>();
         }
 
         /// <summary>
@@ -25,27 +26,31 @@ namespace BlobStorage.Net.Internals
         /// <returns></returns>
         public StorageRegistry With(string Identifier, Func<IStorage> Factory)
         {
+            m_Factories[Identifier] = _ => Factory.Invoke();
+            return this;
+        }
+
+        /// <summary>
+        /// Add a new Storage Factory.
+        /// </summary>
+        /// <param name="Identifier"></param>
+        /// <param name="Factory"></param>
+        /// <returns></returns>
+        public StorageRegistry With(string Identifier, Func<IServiceProvider, IStorage> Factory)
+        {
             m_Factories[Identifier] = Factory;
             return this;
         }
 
         /// <summary>
-        /// Get a Storage by its Identifier.
+        /// Try to get factory functor by identifier.
         /// </summary>
         /// <param name="Identifier"></param>
+        /// <param name="OutFactory"></param>
         /// <returns></returns>
-        public IStorage Get(string Identifier)
+        public bool TryGet(string Identifier, out Func<IServiceProvider, IStorage> OutFactory)
         {
-            lock (m_Instances)
-            {
-                if (m_Instances.TryGetValue(Identifier, out var Storage))
-                    return Storage;
-
-                if (m_Factories.TryGetValue(Identifier, out var Factory))
-                    return m_Instances[Identifier] = Factory();
-
-                return null;
-            }
+            return m_Factories.TryGetValue(Identifier, out OutFactory);
         }
     }
 }

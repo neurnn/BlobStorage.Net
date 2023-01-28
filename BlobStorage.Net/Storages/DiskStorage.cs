@@ -290,6 +290,10 @@ namespace BlobStorage.Net.Storages
 
             try
             {
+                var BasePath = Path.GetDirectoryName(RealName);
+                if (Directory.Exists(BasePath) == false)
+                    Directory.CreateDirectory(BasePath);
+
                 using (var Stream = File.OpenWrite(RealName))
                     await DataStream.CopyToAsync(Stream, Token);
 

@@ -39,3 +39,7 @@ How to delete blob from storage.
 ```
 await Storage.DeleteAsync("full/path/name");
 ```
+
+## TODO List
+
+1. Load configurations from file or some configuration adapters.
